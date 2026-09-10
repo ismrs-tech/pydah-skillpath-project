@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PYDAH SkillPath | Career & Engineering Mastery Platform</title>
+    <meta name="description" content="Official career roadmaps, skill validation, project portfolios, and placement acceleration portal for Pydah Educational Academy students.">
+    <link rel="icon" type="image/png" href="/static/images/pydah_logo.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ========================================================================= -->
+    <!-- AUTHENTICATION GATEWAY -->
+    <!-- ========================================================================= -->
+    <section id="auth-section" class="auth-section">
+        <div class="auth-wrapper">
+            <!-- Left Branding Showcase with Pydah Logo -->
+            <div class="auth-brand-side">
+                <div class="brand-top-row">
+                    <div class="brand-logo-container">
+                        <img src="/static/images/pydah_logo.png" alt="PYDAH GROUP Logo" class="pydah-main-logo">
+                    </div>
+                    <div class="institution-pill">
+                        <span class="live-dot-orange"></span>
+                        <span>Autonomous • NBA & NAAC Accredited</span>
+                    </div>
+                </div>
+
+                <div class="auth-pitch">
+                    <h1 class="hero-brand-heading">Empowering Futures. <br><span class="text-gradient-pydah">Engineering Careers.</span></h1>
+                    <p class="hero-brand-sub">Master industry-aligned technical roadmaps, validate competencies with verified assessments, and fast-track to premier placement opportunities with Pydah SkillPath.</p>
+                </div>
+
+                <div class="auth-features-list">
+                    <div class="feat-box">
+                        <div class="feat-icon"><i data-lucide="map-pin"></i></div>
+                        <div>
+                            <strong>Interactive Tech Roadmaps</strong>
+                            <span>Checkpoints for FSD, AI/ML, Cloud DevOps, CyberSec & Mobile</span>
+                        </div>
+                    </div>
+                    <div class="feat-box">
+                        <div class="feat-icon"><i data-lucide="message-square-code"></i></div>
+                        <div>
+                            <strong>Interview Flashcard Deck</strong>
+                            <span>Master top campus technical interview questions with 1 click</span>
+                        </div>
+                    </div>
+                    <div class="feat-box">
+                        <div class="feat-icon"><i data-lucide="briefcase"></i></div>
+                        <div>
+                            <strong>Placement Matching Radar</strong>
+                            <span>Filter Dream & Super Dream drives (₹ 5.5 - 16 LPA)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="auth-footer-stats">
+                    <div class="stat-cell">
+                        <strong>5</strong>
+                        <span>Specialized Tracks</span>
+                    </div>
+                    <div class="stat-cell">
+                        <strong>100%</strong>
+                        <span>Self-Service Reset</span>
+                    </div>
+                    <div class="stat-cell">
+                        <strong>ATS-Ready</strong>
+                        <span>Resume Generator</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Authentication Form Card -->
+            <div class="auth-form-side">
+                <div class="auth-card">
+                    <!-- Auth Tabs -->
+                    <div class="auth-nav-pills">
+                        <button id="tab-btn-login" class="auth-pill active" onclick="switchAuthTab('login')">
+                            <i data-lucide="log-in"></i> Sign In
+                        </button>
+                        <button id="tab-btn-register" class="auth-pill" onclick="switchAuthTab('register')">
+                            <i data-lucide="user-plus"></i> Register
+                        </button>
+                        <button id="tab-btn-reset" class="auth-pill" onclick="switchAuthTab('reset')">
+                            <i data-lucide="key-round"></i> Reset Key
+                        </button>
+                    </div>
+
+                    <!-- Quick Demo Credentials -->
+                    <div id="quick-demo-wrapper" class="quick-demo-box">
+                        <div class="quick-demo-title">
+                            <i data-lucide="zap"></i> Quick One-Click Demo Access
+                        </div>
+                        <div class="demo-buttons-grid">
+                            <button type="button" class="btn-demo-fill" onclick="quickFillDemo('student')">
+                                <span class="badge-role student">Student</span>
+                                <span class="demo-name">Venkata Sai Teja (student@pydah.edu.in)</span>
+                            </button>
+                            <button type="button" class="btn-demo-fill" onclick="quickFillDemo('admin')">
+                                <span class="badge-role admin">Admin</span>
+                                <span class="demo-name">Dean's Innovation Office (admin@pydah.edu.in)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 1. LOGIN FORM -->
+                    <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="login-email">Registered Email</label>
+                            <div class="input-with-icon">
+                                <i data-lucide="mail"></i>
+                                <input type="email" id="login-email" required placeholder="student@pydah.edu.in" value="student@pydah.edu.in">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <div class="input-with-icon">
+                                <i data-lucide="lock"></i>
+                                <input type="password" id="login-password" required placeholder="••••••••" value="pydah123">
+                            </div>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" checked id="remember-me">
+                                <span>Remember my session</span>
+                            </label>
+                            <a href="javascript:void(0)" onclick="switchAuthTab('reset')" class="text-link">
+                                Forgot password?
+                            </a>
+                        </div>
+
+                        <button type="submit" id="btn-login-submit" class="btn-primary btn-block">
+                            <span>Access SkillPath Portal</span>
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <!-- 2. REGISTER FORM -->
+                    <form id="register-form" class="auth-form hidden" onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label for="reg-name">Student Full Name</label>
+                            <div class="input-with-icon">
+                                <i data-lucide="user"></i>
+                                <input type="text" id="reg-name" required placeholder="e.g. K. Ananya Reddy">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-email">College / Personal Email</label>
+                            <div class="input-with-icon">
+                                <i data-lucide="mail"></i>
+                                <input type="email" id="reg-email" required placeholder="yourname@pydah.edu.in">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-dept">Department</label>
+                                <select id="reg-dept" class="select-field" onchange="onDepartmentChanged()">
+                                    <option value="Computer Science & Engineering">CSE (Computer Science)</option>
+                                    <option value="Artificial Intelligence & Data Science">AI & Data Science (AIML / DS)</option>
+                                    <option value="Electronics & Communication">ECE (Electronics & Comm)</option>
+                                    <option value="Electrical & Electronics">EEE (Electrical & Electronics)</option>
+                                    <option value="Information Technology">IT (Information Tech)</option>
+                                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-year">Year of Study</label>
+                                <select id="reg-year" class="select-field">
+                                    <option value="1st Year B.Tech">1st Year</option>
+                                    <option value="2nd Year B.Tech">2nd Year</option>
+                                    <option value="3rd Year B.Tech" selected>3rd Year</option>
+                                    <option value="Final Year B.Tech">Final Year</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Department Course Selector -->
+                        <div class="form-group">
+                            <label for="reg-course" style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Preferred Specialization / Course</span>
+                                <span class="badge-dept-live" id="reg-dept-badge">⭐ Recommended Course</span>
+                            </label>
+                            <div class="input-with-icon">
+                                <i data-lucide="compass"></i>
+                                <select id="reg-course" class="select-field" onchange="onCourseChanged()">
+                                    <!-- Populated dynamically based on department -->
+                                </select>
+                            </div>
+                            <span class="field-hint" id="reg-course-hint">⚡ Courses aligned with Pydah Autonomous syllabus & placement recruitment</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-target">Primary Career Ambition</label>
+                            <div class="input-with-icon">
+                                <i data-lucide="target"></i>
+                                <input type="text" id="reg-target" placeholder="e.g. Full Stack Cloud Engineer, AI Specialist" value="Full Stack Cloud Architect">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reg-password">Create Password</label>
+                            <div class="input-with-icon">
+                                <i data-lucide="lock"></i>
+                                <input type="password" id="reg-password" required placeholder="Minimum 6 characters">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-reg-submit" class="btn-primary btn-block">
+                            <span>Create Student Profile</span>
+                            <i data-lucide="check-circle"></i>
+                        </button>
+                    </form>
+
+                    <!-- 3. SELF-SERVICE FORGOT PASSWORD RESET FORM -->
+                    <form id="reset-form" class="auth-form hidden" onsubmit="handlePasswordReset(event)">
+                        <div class="reset-intro-notice">
+                            <i data-lucide="shield-alert"></i>
+                            <div>
+                                <strong>Direct Password Reset</strong>
+                                <span>No faculty approval required. Reset your password directly by verifying your registered email address.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reset-email">Registered Email Address</label>
+                            <div class="input-with-icon">
+                                <i data-lucide="mail"></i>
+                                <input type="email" id="reset-email" required placeholder="student@pydah.edu.in">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reset-new-password">New Password</label>
+                            <div class="input-with-icon">
+                                <i data-lucide="key"></i>
+                                <input type="password" id="reset-new-password" required placeholder="Enter new password (min 6 chars)">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reset-confirm-password">Confirm New Password</label>
+                            <div class="input-with-icon">
+                                <i data-lucide="check-circle-2"></i>
+                                <input type="password" id="reset-confirm-password" required placeholder="Re-enter new password">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-reset-submit" class="btn-primary btn-block">
+                            <span>Update & Reset Password</span>
+                            <i data-lucide="refresh-cw"></i>
+                        </button>
+
+                        <div style="text-align: center; margin-top: 6px;">
+                            <a href="javascript:void(0)" onclick="switchAuthTab('login')" class="text-link" style="font-size: 0.85rem;">
+                                ← Return to Login
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- MAIN APPLICATION PORTAL -->
+    <!-- ========================================================================= -->
+    <div id="app-section" class="app-section hidden">
+        <!-- Top Navigation Bar -->
+        <header class="top-nav">
+            <div class="nav-left">
+                <div class="app-brand-wrapper" onclick="switchAppTab('dashboard')">
+                    <img src="/static/images/pydah_logo.png" alt="PYDAH GROUP Logo" class="nav-pydah-logo">
+                    <div class="nav-brand-text">
+                        <span class="brand-title-app">PYDAH <span class="brand-skill">Skill</span><span class="text-orange">Path</span></span>
+                    </div>
+                </div>
+
+                <nav class="nav-links">
+                    <button class="nav-link-btn active" data-tab="dashboard" onclick="switchAppTab('dashboard')">
+                        <i data-lucide="layout-dashboard"></i> <span>Dashboard</span>
+                    </button>
+                    <button class="nav-link-btn" data-tab="roadmaps" onclick="switchAppTab('roadmaps')">
+                        <i data-lucide="map"></i> <span>Tech Roadmaps</span>
+                    </button>
+                    <button class="nav-link-btn" data-tab="interview" onclick="switchAppTab('interview')">
+                        <i data-lucide="message-square-code"></i> <span>Interview Prep</span>
+                    </button>
+                    <button class="nav-link-btn" data-tab="quizzes" onclick="switchAppTab('quizzes')">
+                        <i data-lucide="help-circle"></i> <span>Quiz Arena</span>
+                    </button>
+                    <button class="nav-link-btn" data-tab="projects" onclick="switchAppTab('projects')">
+                        <i data-lucide="folder-git-2"></i> <span>Projects</span>
+                    </button>
+                    <button class="nav-link-btn" data-tab="placements" onclick="switchAppTab('placements')">
+                        <i data-lucide="briefcase"></i> <span>Placement Radar</span>
+                    </button>
+                    <button class="nav-link-btn" data-tab="leaderboard" onclick="switchAppTab('leaderboard')">
+                        <i data-lucide="trophy"></i> <span>Leaderboard</span>
+                    </button>
+                    <button class="nav-link-btn" data-tab="passport" onclick="switchAppTab('passport')">
+                        <i data-lucide="award"></i> <span>Skill Passport</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="nav-right">
+                <div class="streak-badge" title="Daily Learning Streak">
+                    <i data-lucide="flame" class="streak-icon"></i>
+                    <span id="nav-streak-count">14 Days</span>
+                </div>
+
+                <div class="user-profile-menu">
+                    <div class="user-avatar" id="nav-avatar">VS</div>
+                    <div class="user-info-text">
+                        <div class="user-name" id="nav-user-name">Venkata Sai Teja</div>
+                        <div class="user-role-badge" id="nav-user-role">Student • CSE</div>
+                    </div>
+                    <button class="btn-icon-logout" onclick="handleLogout()" title="Sign Out">
+                        <i data-lucide="log-out"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area with Dynamic Views -->
+        <main class="main-container">
+
+            <!-- TAB 1: DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content active">
+                <div class="dashboard-hero">
+                    <div class="hero-left">
+                        <div class="student-welcome-badge">
+                            <span class="live-dot-orange"></span> Pydah Student Portal • Academic Term 2026
+                        </div>
+                        <h2 class="welcome-heading">Welcome back, <span id="dash-user-name" class="text-orange">Sai Teja</span>! 🚀</h2>
+                        <p class="hero-desc">You are advancing on the <strong id="dash-track-title">Full Stack Web & Cloud Architect</strong> roadmap. Complete module checkpoints and practice interview flashcards to unlock placement fast-track privileges.</p>
+                        
+                        <div class="hero-actions">
+                            <button class="btn-primary" onclick="switchAppTab('roadmaps')">
+                                <i data-lucide="play-circle"></i>
+                                <span>Continue Roadmap</span>
+                            </button>
+                            <button class="btn-secondary" onclick="switchAppTab('interview')">
+                                <i data-lucide="message-square-code"></i>
+                                <span>Practice Interview Q&A</span>
+                            </button>
+                            <button class="btn-secondary" onclick="openAtsResumeModal()">
+                                <i data-lucide="file-text"></i>
+                                <span>ATS Resume Snippet</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="hero-right">
+                        <div class="readiness-card">
+                            <div class="readiness-radial">
+                                <svg class="progress-ring" width="130" height="130">
+                                    <circle class="progress-ring__circle-bg" stroke="#1e293b" stroke-width="10" fill="transparent" r="54" cx="65" cy="65"/>
+                                    <circle id="dash-readiness-circle" class="progress-ring__circle" stroke="#ea580c" stroke-width="10" stroke-dasharray="339.292" stroke-dashoffset="100" stroke-linecap="round" fill="transparent" r="54" cx="65" cy="65"/>
+                                </svg>
+                                <div class="radial-center">
+                                    <span id="dash-readiness-val" class="radial-val">78%</span>
+                                    <span class="radial-label">Readiness</span>
+                                </div>
+                            </div>
+                            <div class="readiness-caption">
+                                <strong>Placement Ready</strong>
+                                <span>TCS Prime & Cognizant Elevate Benchmark Exceeded</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Cards Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon orange"><i data-lucide="check-circle-2"></i></div>
+                        <div class="metric-body">
+                            <span class="metric-label">Completed Modules</span>
+                            <div class="metric-value" id="dash-completed-modules">0</div>
+                            <span class="metric-delta positive"><i data-lucide="trending-up"></i> Verified Progress</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon gold"><i data-lucide="award"></i></div>
+                        <div class="metric-body">
+                            <span class="metric-label">Skill Badges</span>
+                            <div class="metric-value" id="dash-quizzes-passed">0</div>
+                            <span class="metric-delta positive"><i data-lucide="shield-check"></i> Certified Competencies</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon cyan"><i data-lucide="folder-code"></i></div>
+                        <div class="metric-body">
+                            <span class="metric-label">Capstone Projects</span>
+                            <div class="metric-value" id="dash-projects-count">0</div>
+                            <span class="metric-delta positive"><i data-lucide="git-branch"></i> GitHub Synced</span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon emerald"><i data-lucide="zap"></i></div>
+                        <div class="metric-body">
+                            <span class="metric-label">Karma Points</span>
+                            <div class="metric-value" id="dash-karma-points">0</div>
+                            <span class="metric-delta"><i data-lucide="sparkles"></i> Top 5% in College</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two Column Lower Dashboard -->
+                <div class="dash-columns-grid">
+                    <!-- Left: Active Track Overview -->
+                    <div class="dash-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i data-lucide="compass"></i>
+                                <span>Active Roadmap Tracker</span>
+                            </div>
+                            <button class="btn-ghost-sm" onclick="switchAppTab('roadmaps')">View All Roadmaps <i data-lucide="arrow-right"></i></button>
+                        </div>
+
+                        <div id="dash-track-preview-box" class="track-preview-box">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Placement Opportunities Spotlight -->
+                    <div class="dash-panel">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <i data-lucide="briefcase"></i>
+                                <span>Placement Opportunities Radar</span>
+                            </div>
+                            <button class="btn-ghost-sm" onclick="switchAppTab('placements')">Explore Drives <i data-lucide="arrow-right"></i></button>
+                        </div>
+
+                        <div id="dash-placements-spotlight" class="placements-spotlight-list">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: TECH ROADMAPS (With Granular Checkpoints) -->
+            <div id="tab-roadmaps" class="tab-content">
+                <div class="section-top-bar">
+                    <div>
+                        <h2 class="section-title">Career Pathways & Interactive Roadmaps</h2>
+                        <p class="section-desc">Visual, step-by-step technical blueprints with granular checkpoint checklists aligned with hiring criteria.</p>
+                    </div>
+                    <div class="track-filter-chips" id="track-filter-chips">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- Department Roadmap Filter Bar -->
+                <div class="dept-filter-bar" id="dept-filter-bar">
+                    <div class="dept-badge-pill" id="roadmap-dept-indicator">
+                        <i data-lucide="graduation-cap"></i>
+                        <span id="roadmap-dept-text">Department: Computer Science & Engineering</span>
+                    </div>
+                    <div class="dept-toggle-buttons">
+                        <button id="btn-filter-dept-only" class="btn-subtle-toggle active" onclick="toggleDeptRoadmaps(true)">
+                            <i data-lucide="sparkles"></i>
+                            <span>My Department Tracks</span>
+                        </button>
+                        <button id="btn-filter-all-tracks" class="btn-subtle-toggle" onclick="toggleDeptRoadmaps(false)">
+                            <i data-lucide="layout-grid"></i>
+                            <span>All Engineering Tracks</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Track Detail Hero -->
+                <div class="track-hero-card" id="track-hero-card">
+                    <div class="track-hero-left">
+                        <div class="track-tag" id="track-hero-category">Software Engineering</div>
+                        <h3 class="track-hero-title" id="track-hero-title">Full Stack Web & Cloud Architect</h3>
+                        <p class="track-hero-tagline" id="track-hero-tagline">Master frontend frameworks, scalable microservices, databases, and automated cloud deployments.</p>
+                        
+                        <div class="track-meta-row">
+                            <span class="meta-item"><i data-lucide="clock"></i> Est. 90 Hours</span>
+                            <span class="meta-item"><i data-lucide="bar-chart"></i> Demand: Very High</span>
+                            <span class="meta-item"><i data-lucide="layers"></i> 7 Core Modules</span>
+                        </div>
+                    </div>
+
+                    <div class="track-hero-right">
+                        <div class="track-completion-box">
+                            <div class="prog-text-row">
+                                <span>Roadmap Mastery</span>
+                                <strong id="track-hero-pct" class="text-orange">0%</strong>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div id="track-hero-prog-fill" class="progress-bar-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="prog-sub" id="track-hero-modules-sub">0 of 7 Modules Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Roadmap Nodes Flow -->
+                <div class="roadmap-tree-container">
+                    <div class="roadmap-line"></div>
+                    <div id="roadmap-nodes-wrapper" class="roadmap-nodes-wrapper">
+                        <!-- Modules injected dynamically with interactive checkboxes -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: TECHNICAL INTERVIEW PREPARATION FLASHCARDS -->
+            <div id="tab-interview" class="tab-content">
+                <div class="section-top-bar">
+                    <div>
+                        <h2 class="section-title">Technical Interview Q&A Flashcards</h2>
+                        <p class="section-desc">Actual conceptual and architectural interview questions asked in technical screening rounds by top recruiters.</p>
+                    </div>
+                    <div class="track-quiz-tabs" id="flashcard-track-tabs">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+
+                <div class="flashcards-deck-container" id="flashcards-deck-container">
+                    <!-- Injected dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB 4: QUIZ ARENA -->
+            <div id="tab-quizzes" class="tab-content">
+                <div class="section-top-bar">
+                    <div>
+                        <h2 class="section-title">Skill Assessment Arena</h2>
+                        <p class="section-desc">Validate your knowledge across roadmaps, earn verified certificates, and unlock recruiter recommendations.</p>
+                    </div>
+                    <div class="track-quiz-tabs" id="quiz-track-tabs">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+
+                <div class="quiz-container" id="quiz-active-container">
+                    <!-- Dynamic quiz cards or question solver -->
+                </div>
+            </div>
+
+            <!-- TAB 5: PROJECTS PORTFOLIO -->
+            <div id="tab-projects" class="tab-content">
+                <div class="section-top-bar">
+                    <div>
+                        <h2 class="section-title">Student Project Showcase</h2>
+                        <p class="section-desc">Real-world systems, capstone prototypes, and production repositories created by Pydah students.</p>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('modal-add-project')">
+                        <i data-lucide="plus-circle"></i>
+                        <span>Add Project to Portfolio</span>
+                    </button>
+                </div>
+
+                <div class="projects-grid" id="projects-grid">
+                    <!-- Project Cards injected dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB 6: PLACEMENT RADAR WITH SEARCH & FILTERS -->
+            <div id="tab-placements" class="tab-content">
+                <div class="section-top-bar">
+                    <div>
+                        <h2 class="section-title">Placement Drives & Opportunities</h2>
+                        <p class="section-desc">Active placement drives directly matched with your mastered SkillPath competencies.</p>
+                    </div>
+                    <div class="placement-stats-pill">
+                        <i data-lucide="check-check"></i>
+                        <span>AI Skill Matching Active</span>
+                    </div>
+                </div>
+
+                <!-- Search and Filters Bar -->
+                <div class="placements-filter-toolbar">
+                    <div class="placement-search-box">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="placement-search-input" placeholder="Search by company, role, or skill..." oninput="handlePlacementFilter()">
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="filter-label">Package Tier:</span>
+                        <div class="filter-chips-row" id="package-filter-chips">
+                            <button class="filter-chip active" data-val="All" onclick="setPlacementPackageFilter('All')">All</button>
+                            <button class="filter-chip" data-val="Super Dream" onclick="setPlacementPackageFilter('Super Dream')">Super Dream (>10 LPA)</button>
+                            <button class="filter-chip" data-val="Dream" onclick="setPlacementPackageFilter('Dream')">Dream (>7 LPA)</button>
+                            <button class="filter-chip" data-val="Standard" onclick="setPlacementPackageFilter('Standard')">Standard</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="filter-label">Location:</span>
+                        <select id="placement-location-select" class="select-field" style="max-width: 180px;" onchange="handlePlacementFilter()">
+                            <option value="All">All Locations</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Visakhapatnam">Visakhapatnam</option>
+                            <option value="Bengaluru">Bengaluru</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="placements-grid" id="placements-grid">
+                    <!-- Placement Cards injected dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB 7: CAMPUS LEADERBOARD -->
+            <div id="tab-leaderboard" class="tab-content">
+                <div class="section-top-bar">
+                    <div>
+                        <h2 class="section-title">Campus Skill & Karma Leaderboard</h2>
+                        <p class="section-desc">Recognizing top students across departments for consistency, roadmap mastery, and verified project execution.</p>
+                    </div>
+                    <div class="streak-badge">
+                        <i data-lucide="flame" class="streak-icon"></i>
+                        <span>Rankings Updated Live</span>
+                    </div>
+                </div>
+
+                <div class="leaderboard-card">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Student</th>
+                                <th>Department & Year</th>
+                                <th>Specialization Track</th>
+                                <th>Modules Mastered</th>
+                                <th>Karma XP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 8: SKILL PASSPORT & OFFICIAL CERTIFICATE -->
+            <div id="tab-passport" class="tab-content">
+                <div class="section-top-bar">
+                    <div>
+                        <h2 class="section-title">Pydah Verified Credential & Degree of Skill</h2>
+                        <p class="section-desc">Official institution-accredited diploma and engineering distinction issued by Pydah Group of Institutions.</p>
+                    </div>
+                    <div class="cert-toolbar-actions">
+                        <div class="cert-theme-selector">
+                            <button class="cert-theme-btn active" id="btn-theme-parchment" onclick="setCertificateTheme('parchment')">
+                                👑 Royal Parchment
+                            </button>
+                            <button class="cert-theme-btn" id="btn-theme-midnight" onclick="setCertificateTheme('midnight')">
+                                🌌 Executive Obsidian
+                            </button>
+                        </div>
+                        <button class="btn-secondary" onclick="openAtsResumeModal()">
+                            <i data-lucide="file-text"></i>
+                            <span>ATS Resume Snippet</span>
+                        </button>
+                        <button class="btn-primary" onclick="printCertificate()">
+                            <i data-lucide="printer"></i>
+                            <span>Print / Save Official PDF</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Responsive Certificate Viewport Container (Guarantees perfect fitting) -->
+                <div class="certificate-viewport-frame">
+                    <div class="academic-certificate-sheet theme-parchment" id="passport-document">
+                        <!-- Certificate rendered dynamically -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODALS -->
+    <!-- ========================================================================= -->
+
+    <!-- Submit Project Modal -->
+    <div id="modal-add-project" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i data-lucide="folder-plus"></i>
+                    <span>Submit Project for Portfolio</span>
+                </div>
+                <button class="modal-close" onclick="closeModal('modal-add-project')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="project-submit-form" class="modal-form" onsubmit="handleProjectSubmit(event)">
+                <div class="form-group">
+                    <label for="proj-title">Project Title</label>
+                    <input type="text" id="proj-title" required placeholder="e.g. Distributed Telemetry & IoT Cloud" class="text-input">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="proj-track">Associated Career Roadmap</label>
+                        <select id="proj-track" class="select-field">
+                            <option value="1">Full Stack Web & Cloud Architect</option>
+                            <option value="2">Artificial Intelligence & Generative AI</option>
+                            <option value="3">Cloud Native, DevOps & SRE</option>
+                            <option value="4">Cybersecurity & Penetration Testing</option>
+                            <option value="5">Mobile App Development</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="proj-tech">Tech Stack (comma-separated)</label>
+                        <input type="text" id="proj-tech" required placeholder="Python, Flask, SQLite, React, Docker" class="text-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="proj-summary">Executive Summary & Problem Solved</label>
+                    <textarea id="proj-summary" rows="3" required placeholder="Describe the real-world application, architecture, and results..." class="text-area"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="proj-github">GitHub Repository URL</label>
+                        <input type="url" id="proj-github" placeholder="https://github.com/your-username/repo" class="text-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="proj-demo">Live Demo / Deployed Link (Optional)</label>
+                        <input type="url" id="proj-demo" placeholder="https://your-project.vercel.app" class="text-input">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('modal-add-project')">Cancel</button>
+                    <button type="submit" class="btn-primary">Add to Portfolio (+200 XP)</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ATS Resume Snippet Modal -->
+    <div id="modal-ats-resume" class="modal-overlay hidden">
+        <div class="modal-box" style="max-width: 680px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i data-lucide="file-check-2"></i>
+                    <span>ATS-Optimized Resume Skill Snippet</span>
+                </div>
+                <button class="modal-close" onclick="closeModal('modal-ats-resume')">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-form">
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Copy and paste this verified technical summary directly into your resume or LinkedIn profile when applying to companies like TCS, Amazon, and Cognizant.
+                </p>
+
+                <div class="ats-code-box">
+                    <pre id="ats-resume-text" class="ats-pre-text"></pre>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('modal-ats-resume')">Close</button>
+                    <button type="button" class="btn-primary" onclick="copyAtsResumeToClipboard()">
+                        <i data-lucide="copy"></i>
+                        <span>Copy to Clipboard</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
