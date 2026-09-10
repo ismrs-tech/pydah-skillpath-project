@@ -525,12 +525,14 @@ label {
     align-items: center;
 }
 
-.input-with-icon i {
+.input-with-icon i,
+.input-with-icon svg {
     position: absolute;
     left: 12px;
     width: 18px;
     height: 18px;
     color: var(--text-dim);
+    fill: currentColor;
     pointer-events: none;
 }
 
@@ -2967,3 +2969,307 @@ label {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   DASHBOARD PORTFOLIO TAB STYLES
+   ========================================================================== */
+.portfolio-dashboard-header {
+    margin-bottom: 28px;
+}
+
+.portfolio-banner {
+    background: radial-gradient(ellipse at top right, rgba(234, 88, 12, 0.18), rgba(15, 23, 42, 0.95) 70%);
+    border: 1px solid rgba(234, 88, 12, 0.35);
+    border-radius: 20px;
+    padding: 34px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 35px rgba(234, 88, 12, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px;
+    border-radius: 9999px;
+    background: rgba(234, 88, 12, 0.15);
+    border: 1px solid rgba(234, 88, 12, 0.4);
+    color: #fb923c;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.banner-badge i {
+    width: 14px;
+    height: 14px;
+}
+
+.banner-title {
+    font-family: var(--font-heading);
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+}
+
+.banner-sub {
+    font-size: 0.96rem;
+    color: var(--text-muted);
+    max-width: 780px;
+    line-height: 1.65;
+    margin-bottom: 24px;
+}
+
+.portfolio-link-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: rgba(9, 13, 22, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 20px;
+    border-radius: 12px;
+}
+
+.link-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--cyan-accent);
+    font-family: var(--font-mono);
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.link-display i {
+    width: 18px;
+    height: 18px;
+    color: var(--pydah-orange-light);
+}
+
+.link-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-copy-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.btn-copy-link i {
+    width: 15px;
+    height: 15px;
+}
+
+.btn-copy-link:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.btn-open-portfolio {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    background: linear-gradient(135deg, var(--pydah-orange), #c2410c);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+    transition: var(--transition-smooth);
+}
+
+.btn-open-portfolio i {
+    width: 15px;
+    height: 15px;
+}
+
+.btn-open-portfolio:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(234, 88, 12, 0.5);
+}
+
+/* Portfolio Customization Editor */
+.portfolio-editor-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: var(--shadow-card);
+}
+
+.editor-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.editor-header-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.editor-header-title i {
+    width: 24px;
+    height: 24px;
+    color: var(--pydah-orange-light);
+}
+
+.editor-header-title h3 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.editor-header-title p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.btn-preview-quick {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    color: var(--cyan-accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+.btn-preview-quick i {
+    width: 15px;
+    height: 15px;
+}
+
+.btn-preview-quick:hover {
+    background: rgba(6, 182, 212, 0.12);
+    border-color: var(--cyan-accent);
+}
+
+.field-hint {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    margin-top: 5px;
+}
+
+.editor-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Photo Uploader Box */
+.portfolio-photo-uploader-box {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 22px;
+}
+
+.photo-preview-wrapper {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 3px solid var(--pydah-orange);
+    box-shadow: 0 0 16px rgba(234, 88, 12, 0.35);
+    background: #0f172a;
+}
+
+.port-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.photo-uploader-meta {
+    flex-grow: 1;
+}
+
+.uploader-label {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.uploader-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.photo-uploader-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.btn-choose-photo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: rgba(234, 88, 12, 0.15);
+    border: 1px solid var(--pydah-orange);
+    color: #fb923c;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.btn-choose-photo i {
+    width: 15px;
+    height: 15px;
+}
+
+.btn-choose-photo:hover {
+    background: var(--pydah-orange);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);
+}
+
+.upload-status-text {
+    font-size: 0.82rem;
+}
+
+

@@ -402,6 +402,8 @@ async function switchAppTab(tabName) {
         await loadLeaderboard();
     } else if (tabName === 'passport') {
         await loadSkillPassport();
+    } else if (tabName === 'portfolio') {
+        await loadPortfolioEditor();
     }
 
     lucide.createIcons();
@@ -1070,7 +1072,7 @@ async function loadProjects() {
                     <div class="proj-footer-links">
                         ${p.github_url ? `
                             <a href="${p.github_url}" target="_blank" rel="noopener" class="proj-link">
-                                <i data-lucide="github"></i> Source Code
+                                <svg style="width:14px;height:14px;fill:currentColor;vertical-align:-2px;margin-right:4px;" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>Source Code
                             </a>
                         ` : ''}
                         ${p.live_demo_url ? `
@@ -1488,3 +1490,153 @@ window.addEventListener('click', (e) => {
         e.target.classList.add('hidden');
     }
 });
+
+// -----------------------------------------------------------------------------
+// TAB 9: STUDENT RECRUITER PORTFOLIO CONTROLLER
+// -----------------------------------------------------------------------------
+async function loadPortfolioEditor() {
+    if (!state.user) return;
+
+    const liveUrl = `${window.location.origin}/portfolio/${state.user.id}`;
+    const urlDisplay = document.getElementById('portfolio-live-url');
+    const openBtn = document.getElementById('btn-open-portfolio-tab');
+    
+    if (urlDisplay) urlDisplay.textContent = liveUrl;
+    if (openBtn) openBtn.href = `/portfolio/${state.user.id}`;
+
+    try {
+        const res = await fetch(`/api/portfolio/${state.user.id}`);
+        if (res.ok) {
+            const data = await res.json();
+            const u = data.portfolio.user;
+
+            const elTagline = document.getElementById('port-tagline');
+            const elBio = document.getElementById('port-bio');
+            const elGithub = document.getElementById('port-github');
+            const elLinkedin = document.getElementById('port-linkedin');
+            const elLocation = document.getElementById('port-location');
+            const elPhone = document.getElementById('port-phone');
+            const elSkills = document.getElementById('port-skills');
+            const elAvatar = document.getElementById('port-avatar-url');
+
+            if (elTagline) elTagline.value = u.tagline || 'Computer Science Student, Python Developer & Robotics Enthusiast';
+            if (elBio) elBio.value = u.bio || '';
+            if (elGithub) elGithub.value = u.github_url || 'https://github.com/ismrs-tech';
+            if (elLinkedin) elLinkedin.value = u.linkedin_url || 'https://linkedin.com/in/pydah-student';
+            if (elLocation) elLocation.value = u.location || 'Kakinada, Andhra Pradesh, India';
+            if (elPhone) elPhone.value = u.phone || '+91 98765 43210';
+            if (elSkills) elSkills.value = u.custom_skills || 'Python, Flask, JavaScript, React, REST APIs, SQLite, Machine Learning, Robotics & IoT, Embedded C';
+            if (elAvatar) elAvatar.value = u.profile_image_url || '/static/images/student_avatar.jpg';
+            const preview = document.getElementById('port-avatar-preview');
+            if (preview && u.profile_image_url) {
+                preview.src = u.profile_image_url;
+            }
+        }
+    } catch (err) {
+        console.error('Error loading portfolio data:', err);
+    }
+}
+
+async function handleAvatarFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Instant local preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const preview = document.getElementById('port-avatar-preview');
+        if (preview) preview.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    const statusEl = document.getElementById('photo-upload-status');
+    if (statusEl) {
+        statusEl.innerHTML = `<span style="color: var(--cyan-accent); font-weight: 600;">Uploading...</span>`;
+    }
+
+    const formData = new FormData();
+    formData.append('avatar_file', file);
+
+    try {
+        const res = await fetch('/api/portfolio/upload-avatar', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            notify(data.message || 'Photo updated successfully!', 'success');
+            document.getElementById('port-avatar-url').value = data.avatar_url;
+            if (statusEl) {
+                statusEl.innerHTML = `<span style="color: #34d399; font-weight: 600;">✓ Saved to Profile</span>`;
+            }
+            if (state.user) {
+                state.user.profile_image_url = data.avatar_url;
+            }
+        } else {
+            notify(data.message || 'Upload failed.', 'error');
+            if (statusEl) statusEl.textContent = 'Upload failed';
+        }
+    } catch (err) {
+        notify('Network error uploading image.', 'error');
+        if (statusEl) statusEl.textContent = 'Network error';
+    }
+}
+
+async function handleSavePortfolioSettings(e) {
+    e.preventDefault();
+    if (!state.user) return;
+
+    const btn = document.getElementById('btn-save-portfolio');
+    btn.disabled = true;
+    btn.innerHTML = `<span>Saving Changes...</span>`;
+
+    const payload = {
+        tagline: document.getElementById('port-tagline').value.trim(),
+        bio: document.getElementById('port-bio').value.trim(),
+        github_url: document.getElementById('port-github').value.trim(),
+        linkedin_url: document.getElementById('port-linkedin').value.trim(),
+        location: document.getElementById('port-location').value.trim(),
+        phone: document.getElementById('port-phone').value.trim(),
+        custom_skills: document.getElementById('port-skills').value.trim(),
+        profile_image_url: document.getElementById('port-avatar-url').value.trim() || '/static/images/student_avatar.jpg'
+    };
+
+    try {
+        const res = await fetch('/api/portfolio/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            notify(data.message || 'Portfolio profile updated successfully!', 'success');
+            // Update local user state
+            Object.assign(state.user, payload);
+        } else {
+            notify(data.message || 'Failed to update portfolio.', 'error');
+        }
+    } catch (err) {
+        notify('Network error updating portfolio settings.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i data-lucide="save"></i><span>Save Portfolio Changes</span>`;
+        lucide.createIcons();
+    }
+}
+
+function copyPortfolioLink() {
+    if (!state.user) return;
+    const liveUrl = `${window.location.origin}/portfolio/${state.user.id}`;
+    navigator.clipboard.writeText(liveUrl).then(() => {
+        notify('Recruiter Portfolio Link copied to clipboard! Share it anywhere.', 'success');
+    }).catch(() => {
+        notify('Could not copy link to clipboard.', 'error');
+    });
+}
+
+function openLivePortfolioTab() {
+    if (!state.user) return;
+    window.open(`/portfolio/${state.user.id}`, '_blank');
+}
+

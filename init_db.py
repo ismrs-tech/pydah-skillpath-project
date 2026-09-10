@@ -35,6 +35,14 @@ def init_database(reset=False, db_target=None):
         preferred_track_id INTEGER,
         avatar_seed TEXT DEFAULT 'pydah_student',
         karma_xp INTEGER DEFAULT 450,
+        tagline TEXT DEFAULT 'Computer Science Student, Python Developer & Robotics Enthusiast',
+        bio TEXT,
+        github_url TEXT,
+        linkedin_url TEXT,
+        location TEXT DEFAULT 'Kakinada, Andhra Pradesh, India',
+        phone TEXT,
+        custom_skills TEXT,
+        experience_json TEXT DEFAULT '[]',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (preferred_track_id) REFERENCES career_tracks(id) ON DELETE SET NULL
     );

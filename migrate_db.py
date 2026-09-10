@@ -349,6 +349,94 @@ def migrate():
             cursor.execute("UPDATE users SET preferred_track_id = ? WHERE id = ?", (target_track, uid))
             print(f"Set preferred_track_id={target_track} for user ID {uid} ({dept})")
 
+    # 10. Student Portfolio Migration & Seeding
+    cursor.execute("PRAGMA table_info(users);")
+    curr_user_cols = [c[1] for c in cursor.fetchall()]
+    portfolio_columns = [
+        ("tagline", "TEXT DEFAULT 'Computer Science Student, Python Developer & Robotics Enthusiast'"),
+        ("bio", "TEXT"),
+        ("github_url", "TEXT DEFAULT 'https://github.com/ismrs-tech'"),
+        ("linkedin_url", "TEXT DEFAULT 'https://linkedin.com/in/pydah-student'"),
+        ("location", "TEXT DEFAULT 'Kakinada, Andhra Pradesh, India'"),
+        ("phone", "TEXT DEFAULT '+91 98765 43210'"),
+        ("custom_skills", "TEXT DEFAULT 'Python, Flask, JavaScript, React, REST APIs, SQLite, Machine Learning, Robotics & IoT, Git & GitHub, Embedded C, Docker'"),
+        ("experience_json", "TEXT DEFAULT '[]'"),
+        ("profile_image_url", "TEXT DEFAULT '/static/images/student_avatar.jpg'")
+    ]
+    for col_name, col_def in portfolio_columns:
+        if col_name not in curr_user_cols:
+            cursor.execute(f"ALTER TABLE users ADD COLUMN {col_name} {col_def};")
+            print(f"Added {col_name} column to users table.")
+
+    # Seed rich portfolio for demo student (Venkata Sai Teja)
+    demo_bio = (
+        "Passionate Computer Science diploma / B.Tech student specializing in Python development, "
+        "Artificial Intelligence, Machine Learning, Robotics, and IoT. Building innovative embedded systems "
+        "and intelligent software solutions to solve real-world problems. Experienced in mentoring students "
+        "in STEM innovations, hands-on microcontrollers, and full-stack software development at Pydah Educational Academy."
+    )
+    demo_exp = json.dumps([
+        {
+            "role": "ATL Trainer | Robotics, IoT & AI/ML Instructor",
+            "organization": "Atal Tinkering Lab / Pydah Innovation Cell",
+            "period": "2025 - Present",
+            "description": "Conduct Robotics, IoT, AI, and Machine Learning training sessions for students. Teach Python programming, Arduino, sensors, and embedded systems through hands-on practical demonstrations."
+        },
+        {
+            "role": "Full Stack & Embedded Systems Lead",
+            "organization": "Pydah Student Developer Community",
+            "period": "2024 - 2025",
+            "description": "Built and deployed cloud-connected IoT prototypes and full-stack web applications. Led capstone project development and technical workshops."
+        },
+        {
+            "role": "Diploma / B.Tech in Computer Science & Engineering",
+            "organization": "Pydah Group of Institutions, Kakinada",
+            "period": "2023 - 2026",
+            "description": "Focusing on software development, data structures, algorithms, microcontrollers, digital electronics, and cloud native architectures."
+        }
+    ])
+
+    cursor.execute("""
+        UPDATE users 
+        SET tagline = COALESCE(tagline, 'Computer Science Student, Python Developer & Robotics Enthusiast'),
+            bio = COALESCE(bio, ?),
+            github_url = COALESCE(github_url, 'https://github.com/ismrs-tech'),
+            linkedin_url = COALESCE(linkedin_url, 'https://linkedin.com/in/pydah-student'),
+            location = COALESCE(location, 'Kakinada, Andhra Pradesh, India'),
+            phone = COALESCE(phone, '+91 98765 43210'),
+            custom_skills = COALESCE(custom_skills, 'Python, Flask, JavaScript, React, REST APIs, SQLite, Machine Learning, Robotics & IoT, Git & GitHub, Embedded C, Docker'),
+            experience_json = CASE WHEN experience_json IS NULL OR experience_json = '[]' THEN ? ELSE experience_json END,
+            profile_image_url = COALESCE(profile_image_url, '/static/images/student_avatar.jpg')
+        WHERE LOWER(email) = 'student@pydah.edu.in'
+    """, (demo_bio, demo_exp))
+
+    # Add showcase projects matching reference portfolio for student 1
+    cursor.execute("SELECT id FROM users WHERE LOWER(email) = 'student@pydah.edu.in'")
+    student_row = cursor.fetchone()
+    if student_row:
+        student_id = student_row[0]
+        fsd_track_id = track_map.get("FSD", 1)
+        embedded_track_id = track_map.get("EMBEDDED", fsd_track_id)
+        aiml_track_id = track_map.get("AIML", fsd_track_id)
+
+        showcase_projects = [
+            (student_id, aiml_track_id, "BRIGHTER – AI Voice Assistant", "Intelligent desktop voice assistant listening to voice commands, executing desktop tasks, launching web applications, and responding via speech synthesis.", "Python, SpeechRecognition, Pyttsx3, OS Automation", "https://github.com/ismrs-tech/brighter-ai-assistant", "https://ismrs-tech.github.io/ismrs-portfolio/#projects", "Verified & Approved", "Verified by Pydah Innovation Cell. Excellent speech processing pipeline."),
+            (student_id, embedded_track_id, "RFID Automatic Toll Gate System", "Automated toll collection system identifying authorized RFID cards, automatically opening servo barrier gates, and displaying status on 16x2 LCD display.", "Arduino C++, RFID RC522, Servo Actuator, I2C LCD", "https://github.com/ismrs-tech/rfid-toll-gate", "https://ismrs-tech.github.io/ismrs-portfolio/#projects", "Verified & Approved", "Verified by Pydah Innovation Cell. Outstanding hardware circuit design."),
+            (student_id, embedded_track_id, "Fire Alarm & Detection Safety System", "Real-time safety system monitoring flame and smoke levels continuously, triggering immediate loud buzzer alerts and LED status for laboratory and residential protection.", "Embedded C, Flame Sensor, MQ-2 Smoke Sensor, Buzzer", "https://github.com/ismrs-tech/fire-alarm-system", "https://ismrs-tech.github.io/ismrs-portfolio/#projects", "Verified & Approved", "Verified by Pydah Innovation Cell. Critical safety IoT implementation."),
+            (student_id, embedded_track_id, "Smart Electronic Door Lock", "Secure access control system providing keyless electronic authentication via RFID/Keypad input and automated servo motor door deadbolt actuation.", "Arduino, RC522, Servo, 4x4 Matrix Keypad, EEPROM", "https://github.com/ismrs-tech/smart-door-lock", "https://ismrs-tech.github.io/ismrs-portfolio/#projects", "Verified & Approved", "Verified by Pydah Innovation Cell. Clean security architecture."),
+            (student_id, aiml_track_id, "Intelligent Python Desktop Chatbot", "Conversational desktop chatbot built in Python capable of understanding user queries, processing input intent with NLP pattern matching, and offering assistance.", "Python, NLTK, Tkinter GUI, JSON Knowledge Base", "https://github.com/ismrs-tech/python-chatbot", "https://ismrs-tech.github.io/ismrs-portfolio/#projects", "Verified & Approved", "Verified by Pydah Innovation Cell. Good modular intent parser."),
+            (student_id, fsd_track_id, "Pydah Smart Campus Resource Tracker", "Production full-stack web application for automated laboratory inventory and equipment checkout across engineering departments.", "Python, Flask, SQLite, Vanilla CSS, Chart.js", "https://github.com/ismrs-tech/pydah-skillpath-project", "http://127.0.0.1:5000", "Verified & Approved", "Verified by Pydah Innovation Cell. Excellent full-stack implementation.")
+        ]
+
+        for p in showcase_projects:
+            cursor.execute("SELECT id FROM projects WHERE user_id = ? AND title = ?", (p[0], p[2]))
+            if not cursor.fetchone():
+                cursor.execute("""
+                    INSERT INTO projects (user_id, track_id, title, summary, tech_stack, github_url, live_demo_url, status, endorsement_remarks)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, p)
+                print(f"Added showcase project: {p[2]}")
+
     cursor.execute("PRAGMA foreign_keys = ON;")
     conn.commit()
     conn.close()

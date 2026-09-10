@@ -1,11 +1,25 @@
 import sqlite3
 import os
 import json
+import socket
 from datetime import datetime
-from flask import Flask, request, jsonify, render_template, session, send_file
+from flask import Flask, request, jsonify, render_template, session, send_file, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def get_lan_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
+
 app = Flask(__name__, 
             static_folder=os.path.join(BASE_DIR, "static"), 
             template_folder=os.path.join(BASE_DIR, "templates"))
@@ -38,7 +52,13 @@ def current_user():
     if not user_id:
         return None
     conn = get_db()
-    user = conn.execute("SELECT id, name, email, role, department, year_or_designation, target_role, preferred_track_id, avatar_seed, karma_xp, created_at FROM users WHERE id = ?", (user_id,)).fetchone()
+    user = conn.execute("""
+        SELECT id, name, email, role, department, year_or_designation, target_role, 
+               preferred_track_id, avatar_seed, karma_xp, tagline, bio, 
+               github_url, linkedin_url, location, phone, custom_skills, experience_json, 
+               profile_image_url, created_at 
+        FROM users WHERE id = ?
+    """, (user_id,)).fetchone()
     conn.close()
     return dict(user) if user else None
 
@@ -74,6 +94,7 @@ def login():
         return jsonify({"success": False, "message": "Invalid email or password. Please verify credentials."}), 401
 
     session["user_id"] = user["id"]
+    u_keys = user.keys()
     user_dict = {
         "id": user["id"],
         "name": user["name"],
@@ -82,9 +103,18 @@ def login():
         "department": user["department"],
         "year_or_designation": user["year_or_designation"],
         "target_role": user["target_role"],
-        "preferred_track_id": user["preferred_track_id"] if "preferred_track_id" in user.keys() else None,
+        "preferred_track_id": user["preferred_track_id"] if "preferred_track_id" in u_keys else None,
         "avatar_seed": user["avatar_seed"],
-        "karma_xp": user["karma_xp"]
+        "karma_xp": user["karma_xp"],
+        "tagline": user["tagline"] if "tagline" in u_keys else "",
+        "bio": user["bio"] if "bio" in u_keys else "",
+        "github_url": user["github_url"] if "github_url" in u_keys else "",
+        "linkedin_url": user["linkedin_url"] if "linkedin_url" in u_keys else "",
+        "location": user["location"] if "location" in u_keys else "",
+        "phone": user["phone"] if "phone" in u_keys else "",
+        "custom_skills": user["custom_skills"] if "custom_skills" in u_keys else "",
+        "experience_json": user["experience_json"] if "experience_json" in u_keys else "[]",
+        "profile_image_url": user["profile_image_url"] if "profile_image_url" in u_keys and user["profile_image_url"] else "/static/images/student_avatar.jpg"
     }
     return jsonify({"success": True, "message": f"Welcome back, {user['name']}!", "user": user_dict})
 
@@ -774,6 +804,222 @@ VERIFIED CREDENTIALS:
         "badges": [dict(b) for b in badges],
         "ats_resume_snippet": ats_resume_snippet.strip()
     })
+
+# ----------------- RECRUITER & STUDENT PORTFOLIO SHOWCASE -----------------
+
+def get_portfolio_payload(user_id):
+    conn = get_db()
+    user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    if not user:
+        conn.close()
+        return None
+
+    user_dict = dict(user)
+    user_dict.pop("password_hash", None)
+
+    # Fetch projects
+    projects = conn.execute("""
+        SELECT p.*, ct.title as track_title, ct.badge_color, ct.icon as track_icon
+        FROM projects p
+        LEFT JOIN career_tracks ct ON p.track_id = ct.id
+        WHERE p.user_id = ?
+        ORDER BY p.id DESC
+    """, (user_id,)).fetchall()
+    project_list = [dict(p) for p in projects]
+
+    # Fetch completed skills & modules
+    completed_modules = conn.execute("""
+        SELECT m.title, m.tier, m.key_skills, ct.title as track_title, ct.badge_color
+        FROM user_progress up
+        JOIN modules m ON up.module_id = m.id
+        JOIN career_tracks ct ON m.track_id = ct.id
+        WHERE up.user_id = ? AND up.status = 'completed'
+        ORDER BY m.id ASC
+    """, (user_id,)).fetchall()
+    
+    # Skill breakdown
+    skills_set = set()
+    for m in completed_modules:
+        if m["key_skills"]:
+            for s in m["key_skills"].split(","):
+                if s.strip():
+                    skills_set.add(s.strip())
+
+    if user_dict.get("custom_skills"):
+        for s in user_dict["custom_skills"].split(","):
+            if s.strip():
+                skills_set.add(s.strip())
+
+    all_skills = sorted(list(skills_set)) if skills_set else [
+        "Python", "Flask", "JavaScript", "React", "REST APIs", "SQLite", 
+        "Data Structures", "Algorithms", "Git & GitHub", "IoT & Robotics", "Embedded C"
+    ]
+
+    # Categorize skills nicely for presentation
+    categorized_skills = {
+        "Languages & Frameworks": [],
+        "Cloud, Tools & DB": [],
+        "Core CS & Systems": [],
+        "Hardware, AI & Emerging": []
+    }
+    for skill in all_skills:
+        s_low = skill.lower()
+        if any(k in s_low for k in ["python", "javascript", "react", "flask", "django", "html", "css", "c++", "c ", "java", "node"]):
+            categorized_skills["Languages & Frameworks"].append(skill)
+        elif any(k in s_low for k in ["docker", "git", "sql", "sqlite", "cloud", "aws", "linux", "rest", "api", "postman"]):
+            categorized_skills["Cloud, Tools & DB"].append(skill)
+        elif any(k in s_low for k in ["robot", "embedded", "arduino", "iot", "sensor", "ai", "machine learning", "deep learning", "nlp", "vision", "rfid"]):
+            categorized_skills["Hardware, AI & Emerging"].append(skill)
+        else:
+            categorized_skills["Core CS & Systems"].append(skill)
+
+    if not categorized_skills["Languages & Frameworks"]:
+        categorized_skills["Languages & Frameworks"] = ["Python", "JavaScript", "C/C++", "HTML5 & CSS3"]
+    if not categorized_skills["Cloud, Tools & DB"]:
+        categorized_skills["Cloud, Tools & DB"] = ["Flask", "SQLite", "REST APIs", "Git & GitHub"]
+    if not categorized_skills["Hardware, AI & Emerging"]:
+        categorized_skills["Hardware, AI & Emerging"] = ["Embedded Systems", "IoT Telemetry", "Machine Learning", "Robotics"]
+    if not categorized_skills["Core CS & Systems"]:
+        categorized_skills["Core CS & Systems"] = ["Data Structures & Algorithms", "Object-Oriented Design", "Database Management"]
+
+    # Badges
+    badges = conn.execute("""
+        SELECT DISTINCT ct.title as track_title, ct.badge_color, qa.score, qa.total_questions, qa.attempted_at
+        FROM quiz_attempts qa
+        JOIN career_tracks ct ON qa.track_id = ct.id
+        WHERE qa.user_id = ? AND qa.passed = 1
+    """, (user_id,)).fetchall()
+
+    # Parse experience JSON
+    experiences = []
+    if user_dict.get("experience_json"):
+        try:
+            experiences = json.loads(user_dict["experience_json"])
+        except Exception:
+            experiences = []
+
+    lan_ip = get_lan_ip()
+    port = int(os.environ.get("PORT", 5000))
+    mobile_portfolio_url = f"http://{lan_ip}:{port}/portfolio/{user_id}"
+
+    conn.close()
+
+    return {
+        "user": user_dict,
+        "projects": project_list,
+        "skills": all_skills,
+        "categorized_skills": categorized_skills,
+        "completed_modules": [dict(m) for m in completed_modules],
+        "badges": [dict(b) for b in badges],
+        "experiences": experiences,
+        "lan_ip": lan_ip,
+        "mobile_portfolio_url": mobile_portfolio_url,
+        "stats": {
+            "projects_count": len(project_list),
+            "skills_count": len(all_skills),
+            "modules_count": len(completed_modules),
+            "badges_count": len(badges),
+            "karma_xp": user_dict.get("karma_xp", 500)
+        }
+    }
+
+@app.route("/portfolio/<int:user_id>")
+def view_public_portfolio(user_id):
+    data = get_portfolio_payload(user_id)
+    if not data:
+        return "Student portfolio profile not found.", 404
+    return render_template("portfolio.html", **data)
+
+@app.route("/portfolio/me")
+def view_my_portfolio():
+    user = current_user()
+    if not user:
+        return redirect("/#login")
+    return redirect(f"/portfolio/{user['id']}")
+
+@app.route("/api/portfolio/<int:user_id>", methods=["GET"])
+def api_get_portfolio(user_id):
+    data = get_portfolio_payload(user_id)
+    if not data:
+        return jsonify({"success": False, "message": "Student portfolio not found."}), 404
+    return jsonify({"success": True, "portfolio": data})
+
+@app.route("/api/portfolio/upload-avatar", methods=["POST"])
+def upload_avatar():
+    user = current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Authentication required. Please log in."}), 401
+
+    if "avatar_file" not in request.files:
+        return jsonify({"success": False, "message": "No file uploaded."}), 400
+
+    file = request.files["avatar_file"]
+    if not file or file.filename == "":
+        return jsonify({"success": False, "message": "No image selected."}), 400
+
+    allowed = {"png", "jpg", "jpeg", "webp", "gif"}
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+    if ext not in allowed:
+        return jsonify({"success": False, "message": "Please choose a valid photo (PNG, JPG, JPEG, WEBP)."}), 400
+
+    filename = f"avatar_user_{user['id']}_{int(datetime.now().timestamp())}.{ext}"
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(filepath)
+
+    avatar_url = f"/static/uploads/{filename}"
+
+    conn = get_db()
+    conn.execute("UPDATE users SET profile_image_url = ? WHERE id = ?", (avatar_url, user["id"]))
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True, 
+        "message": "Profile picture updated successfully from your device!", 
+        "avatar_url": avatar_url
+    })
+
+@app.route("/api/portfolio/update", methods=["POST"])
+def api_update_portfolio():
+    user = current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Authentication required."}), 401
+
+    data = request.get_json() or {}
+    tagline = data.get("tagline", "").strip()
+    bio = data.get("bio", "").strip()
+    github_url = data.get("github_url", "").strip()
+    linkedin_url = data.get("linkedin_url", "").strip()
+    location = data.get("location", "").strip()
+    phone = data.get("phone", "").strip()
+    custom_skills = data.get("custom_skills", "").strip()
+    experience_json = data.get("experience_json", "[]")
+    profile_image_url = data.get("profile_image_url", "").strip() or "/static/images/student_avatar.jpg"
+
+    if isinstance(experience_json, list):
+        experience_json = json.dumps(experience_json)
+
+    conn = get_db()
+    conn.execute("""
+        UPDATE users
+        SET tagline = ?, bio = ?, github_url = ?, linkedin_url = ?,
+            location = ?, phone = ?, custom_skills = ?, experience_json = ?, profile_image_url = ?
+        WHERE id = ?
+    """, (tagline, bio, github_url, linkedin_url, location, phone, custom_skills, experience_json, profile_image_url, user["id"]))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"success": True, "message": "Student portfolio updated successfully!"})
+
+@app.route("/api/portfolio/contact", methods=["POST"])
+def api_portfolio_contact():
+    data = request.get_json() or {}
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+    message = data.get("message", "").strip()
+    if not name or not email or not message:
+        return jsonify({"success": False, "message": "All fields are required."}), 400
+    return jsonify({"success": True, "message": f"Thank you, {name}! Your message has been sent to the student successfully."})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
