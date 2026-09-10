@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PYDAH SkillPath | Project Presentation Deck</title>
+    <link rel="icon" type="image/png" href="/static/images/pydah_logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #070c18;
+            --bg-slide: #0b1328;
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --pydah-orange: #ea580c;
+            --pydah-gold: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .presentation-bar {
+            height: 54px;
+            background: rgba(11, 19, 40, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+        }
+        .pres-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        .pres-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-ctrl {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-ctrl:hover {
+            background: var(--pydah-orange);
+            border-color: var(--pydah-orange);
+        }
+        .slide-counter {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.84rem;
+            color: var(--pydah-gold);
+            font-weight: 700;
+        }
+        .slide-stage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+        }
+        .slide {
+            display: none;
+            width: 100%;
+            max-width: 1160px;
+            height: 640px;
+            background: var(--bg-slide);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 44px 52px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.3s ease-out;
+        }
+        .slide.active { display: flex; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .slide-header { margin-bottom: 24px; }
+        .slide-tag {
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--pydah-gold);
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+        .slide-heading {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.15;
+            color: #ffffff;
+        }
+        .slide-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+        }
+        .team-member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .member-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--pydah-orange);
+            box-shadow: 0 0 10px var(--pydah-orange);
+        }
+        .cards-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .cards-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .feature-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 22px;
+            border-radius: 12px;
+        }
+        .feature-box h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            color: var(--pydah-gold);
+        }
+        .feature-box p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+        }
+        .code-pill {
+            display: inline-block;
+            background: rgba(234, 88, 12, 0.15);
+            border: 1px solid rgba(234, 88, 12, 0.3);
+            color: #fdba74;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.76rem;
+            margin-top: 6px;
+        }
+        .slide-footer-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="presentation-bar">
+        <div class="pres-title">
+            <i data-lucide="monitor-play" style="color: var(--pydah-orange);"></i>
+            <span>PYDAH SkillPath • Official Project Viva Deck</span>
+        </div>
+        <div class="pres-controls">
+            <span class="slide-counter" id="slide-num">Slide 1 of 10</span>
+            <button class="btn-ctrl" onclick="prevSlide()"><i data-lucide="chevron-left"></i> Prev</button>
+            <button class="btn-ctrl" onclick="nextSlide()">Next <i data-lucide="chevron-right"></i></button>
+            <button class="btn-ctrl" onclick="toggleFullScreen()"><i data-lucide="maximize"></i> Fullscreen</button>
+        </div>
+    </header>
+
+    <main class="slide-stage">
+
+        <!-- SLIDE 1: TITLE & TEAM MEMBERS -->
+        <section class="slide active" data-index="1">
+            <div class="slide-header">
+                <span class="slide-tag">Pydah Educational Academy • Final Project Defense</span>
+                <h1 class="slide-heading" style="color: var(--pydah-orange); font-size: 2.8rem;">PYDAH SkillPath</h1>
+                <p style="font-size: 1.25rem; color: #ffffff; margin-top: 8px;">Career Pathways, Skill Validation & Placement Acceleration Platform</p>
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 6px;">An industry-aligned institutional platform bridging the gap between student competencies and tier-1 recruitment benchmarks.</p>
+            </div>
+            <div class="slide-body">
+                <div class="team-grid">
+                    <div style="grid-column: 1 / -1; margin-bottom: 6px; color: var(--pydah-gold); font-size: 0.88rem; font-weight: 800; text-transform: uppercase;">
+                        Project Development Team
+                    </div>
+                    <div class="team-member-item"><span class="member-dot"></span> 1. I. Sirumanirajasree</div>
+                    <div class="team-member-item"><span class="member-dot"></span> 2. J. Veera Rishitha</div>
+                    <div class="team-member-item"><span class="member-dot"></span> 3. K. Srimahalakshmi</div>
+                    <div class="team-member-item"><span class="member-dot"></span> 4. N. Trilokesh</div>
+                </div>
+            </div>
+            <div class="slide-footer-info">
+                <span>Autonomous • Approved by AICTE, Affiliated to JNTUK</span>
+                <span>Press <strong>→</strong> or <strong>Space</strong> for next slide</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: PROBLEM STATEMENT -->
+        <section class="slide" data-index="2">
+            <div class="slide-header">
+                <span class="slide-tag">Problem Statement & Background</span>
+                <h2 class="slide-heading">The Campus Placement Challenge</h2>
+            </div>
+            <div class="slide-body">
+                <div class="cards-grid-3">
+                    <div class="feature-box" style="border-top: 3px solid #ef4444;">
+                        <h4>1. Curriculum Disconnect</h4>
+                        <p>Academic coursework teaches fundamentals but leaves gaps in modern stacks (Docker, REST APIs, GenAI RAG, Cloud CI/CD) expected by TCS Prime, AWS, and Cognizant.</p>
+                    </div>
+                    <div class="feature-box" style="border-top: 3px solid var(--pydah-gold);">
+                        <h4>2. Lack of Structured Milestones</h4>
+                        <p>Students face tutorial overload and burnout without granular, actionable checklists or verifiable project portfolios.</p>
+                    </div>
+                    <div class="feature-box" style="border-top: 3px solid #10b981;">
+                        <h4>3. Placement Verification</h4>
+                        <p>Placement officers lack a single-source verification dashboard to track verified skill proficiencies and student readiness benchmarks.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer-info">
+                <span>PYDAH SkillPath Presentation</span>
+                <span>Slide 2 / 10</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: PROPOSED SOLUTION -->
+        <section class="slide" data-index="3">
+            <div class="slide-header">
+                <span class="slide-tag">Proposed Solution</span>
+                <h2 class="slide-heading">PYDAH SkillPath Platform Overview</h2>
+            </div>
+            <div class="slide-body">
+                <div class="cards-grid-2">
+                    <div class="feature-box">
+                        <h4>🎯 Interactive Roadmap Blueprints</h4>
+                        <p>5 specialized engineering tracks equipped with step-by-step sub-checkpoints for self-paced hands-on completion.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>⚡ Skill Karma XP & Leaderboard</h4>
+                        <p>Gamified learning incentives awarding points for modules (+100 XP), quizzes (+150 XP), and verified capstones (+200 XP).</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>💼 Placement Radar with AI Matching</h4>
+                        <p>Calculates candidate-to-company skill matching percentage against Dream (> 7 LPA) and Super Dream (> 10 LPA) drives.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>📄 Verified Credentials & ATS Snippet</h4>
+                        <p>1-Click ATS resume text generator plus an authentic academic diploma certificate with 1-page A4 print optimization.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer-info">
+                <span>PYDAH SkillPath Presentation</span>
+                <span>Slide 3 / 10</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: CURRICULUM ROADMAPS -->
+        <section class="slide" data-index="4">
+            <div class="slide-header">
+                <span class="slide-tag">Curriculum Architecture</span>
+                <h2 class="slide-heading">5 Specialized Engineering Pathways</h2>
+            </div>
+            <div class="slide-body">
+                <div class="cards-grid-2">
+                    <div class="feature-box">
+                        <h4>1. Full Stack Web & Cloud Architect (FSD)</h4>
+                        <p>HTML5/CSS3 Grid, ES6+ Async, Flask REST APIs, Relational SQL (3NF), OWASP Security & Docker containerization.</p>
+                        <span class="code-pill">Demand: Very High • 90 Hours</span>
+                    </div>
+                    <div class="feature-box">
+                        <h4>2. AI & Generative AI Specialist (AIML)</h4>
+                        <p>Pandas, NumPy, Scikit-Learn ML, PyTorch Deep Learning CNNs, Vector DBs, LangChain and LLM RAG pipelines.</p>
+                        <span class="code-pill">Demand: Explosive • 110 Hours</span>
+                    </div>
+                    <div class="feature-box">
+                        <h4>3. Cloud Native, DevOps & SRE</h4>
+                        <p>Linux administration, Bash automation, GitOps & GitHub Actions CI/CD, Kubernetes and Terraform Infrastructure as Code.</p>
+                        <span class="code-pill">Demand: High • 85 Hours</span>
+                    </div>
+                    <div class="feature-box">
+                        <h4>4. Cybersecurity & Ethical Penetration</h4>
+                        <p>Wireshark packet capture, Nmap port auditing, OWASP Top 10 vulnerabilities, and Burp Suite web interception.</p>
+                        <span class="code-pill">Demand: Critical • 80 Hours</span>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer-info">
+                <span>PYDAH SkillPath Presentation</span>
+                <span>Slide 4 / 10</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: SYSTEM ARCHITECTURE -->
+        <section class="slide" data-index="5">
+            <div class="slide-header">
+                <span class="slide-tag">Technical Architecture</span>
+                <h2 class="slide-heading">Client-Server Full Stack Architecture</h2>
+            </div>
+            <div class="slide-body">
+                <div class="cards-grid-3">
+                    <div class="feature-box" style="border-top: 3px solid var(--pydah-orange);">
+                        <h4>Frontend Layer (Client)</h4>
+                        <p>• Vanilla HTML5 + CSS3 Design System<br>• Vanilla JS Single Page Application (SPA)<br>• Zero build tools or NPM dependencies<br>• Responsive flex/grid and SVG gauges</p>
+                    </div>
+                    <div class="feature-box" style="border-top: 3px solid var(--pydah-gold);">
+                        <h4>Backend Layer (Server)</h4>
+                        <p>• Python 3.11+ / Flask Framework<br>• RESTful JSON API endpoints<br>• Werkzeug PBKDF2/scrypt encryption<br>• Gunicorn WSGI multi-threading</p>
+                    </div>
+                    <div class="feature-box" style="border-top: 3px solid #10b981;">
+                        <h4>Database Layer (Storage)</h4>
+                        <p>• Embedded SQLite 3 relational engine<br>• Strict PRAGMA foreign_keys = ON<br>• Normalized tables with CHECK constraints<br>• Atomic updates via ON CONFLICT</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer-info">
+                <span>PYDAH SkillPath Presentation</span>
+                <span>Slide 5 / 10</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: FORMULAS & ALGORITHMS -->
+        <section class="slide" data-index="6">
+            <div class="slide-header">
+                <span class="slide-tag">Analytical Intelligence</span>
+                <h2 class="slide-heading">Evaluation Metrics & Algorithms</h2>
+            </div>
+            <div class="slide-body">
+                <div class="cards-grid-3">
+                    <div class="feature-box">
+                        <h4>1. Career Readiness Index</h4>
+                        <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--pydah-gold); margin: 8px 0;">
+                            Min(99, 38 + (Modules × 7) + (Quizzes × 12) + (Projects × 8))
+                        </p>
+                        <p>Combines foundational academic baseline with hands-on verification.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>2. Skill Karma Points (XP)</h4>
+                        <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #38bdf8; margin: 8px 0;">
+                            Base (500) + (M × 100) + (Q × 150) + (P × 200)
+                        </p>
+                        <p>Powers the Campus Leaderboard with podium rankings (🥇 🥈 🥉).</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>3. Placement Skill Matching</h4>
+                        <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #34d399; margin: 8px 0;">
+                            (Matched Skills / Req. Skills × 80) + 20
+                        </p>
+                        <p>Compares student completed skills against company requirements.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer-info">
+                <span>PYDAH SkillPath Presentation</span>
+                <span>Slide 6 / 10</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: KEY INNOVATIONS -->
+        <section class="slide" data-index="7">
+            <div class="slide-header">
+                <span class="slide-tag">Core Innovations</span>
+                <h2 class="slide-heading">Distinctive Platform Highlights</h2>
+            </div>
+            <div class="slide-body">
+                <div class="cards-grid-2">
+                    <div class="feature-box">
+                        <h4>1. Self-Service Password Recovery</h4>
+                        <p>100% automated direct password reset without faculty or administrative bottlenecks.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>2. Technical Interview Flashcards</h4>
+                        <p>Actual screening questions asked by TCS, AWS, Cognizant, and Qualcomm with 1-click reveal answers.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>3. ATS Resume Snippet Generator</h4>
+                        <p>Instant copy-pasteable bullet points summarizing verified skills and capstone repositories.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>4. Dual-Theme Academic Diploma</h4>
+                        <p>Royal Parchment and Executive Midnight themes with gold wax seal and 1-page A4 landscape print fit.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer-info">
+                <span>PYDAH SkillPath Presentation</span>
+                <span>Slide 7 / 10</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: TESTING & VALIDATION -->
+        <section class="slide" data-index="8">
+            <div class="slide-header">
+                <span class="slide-tag">Quality Assurance</span>
+                <h2 class="slide-heading">Security, Testing & Validation</h2>
+            </div>
+            <div class="slide-body">
+                <div class="cards-grid-2">
+                    <div class="feature-box">
+                        <h4>✅ Cryptographic Security</h4>
+                        <p>Passwords encrypted with salted PBKDF2/scrypt hashes. Session cookies secured against unauthorized tampering.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>✅ Concurrency & Performance</h4>
+                        <p>Gunicorn WSGI configured with multi-threaded workers (`--workers 2 --threads 4`) ensuring fast response times under 50ms.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>✅ Idempotent State Updates</h4>
+                        <p>SQLite upserts prevent duplicate progress entries during rapid clicking of module checkpoints.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>✅ 100% Viewport Frame Fitting</h4>
+                        <p>Tested across mobile, 1366px laptops, and print engines ensuring zero cutoffs or vertical line clipping.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer-info">
+                <span>PYDAH SkillPath Presentation</span>
+                <span>Slide 8 / 10</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: PRODUCTION READINESS -->
+        <section class="slide" data-index="9">
+            <div class="slide-header">
+                <span class="slide-tag">DevOps & Cloud</span>
+                <h2 class="slide-heading">Production Cloud Deployment</h2>
+            </div>
+            <div class="slide-body">
+                <div class="cards-grid-3">
+                    <div class="feature-box">
+                        <h4>1. Dockerized Container</h4>
+                        <p>Dockerfile based on `python:3.11-slim`, non-root user (`pydahuser`), health checks, and dynamic `$PORT` handling.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>2. One-Click Cloud WSGI</h4>
+                        <p>Procfile & requirements.txt ready for 1-click zero-config deployment on Render, Railway, or Heroku.</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>3. Windows Desktop Batch</h4>
+                        <p>`run.bat` allows any faculty or student to double-click and launch the platform locally without terminal commands.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-footer-info">
+                <span>PYDAH SkillPath Presentation</span>
+                <span>Slide 9 / 10</span>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: CONCLUSION & TEAM ACKNOWLEDGEMENT -->
+        <section class="slide" data-index="10">
+            <div class="slide-header" style="text-align: center;">
+                <span class="slide-tag">Final Defense & Conclusion</span>
+                <h2 class="slide-heading" style="color: var(--pydah-orange);">Thank You! Any Questions?</h2>
+                <p style="color: var(--text-muted); margin-top: 6px;">Empowering Students • Engineering Futures • Fast-Tracking Careers</p>
+            </div>
+            <div class="slide-body">
+                <div class="team-grid" style="max-width: 800px; margin: 0 auto; border-color: var(--pydah-gold);">
+                    <div style="grid-column: 1 / -1; text-align: center; color: var(--pydah-gold); font-size: 1rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px;">
+                        Project Team Members
+                    </div>
+                    <div class="team-member-item"><span class="member-dot"></span> 1. I. Sirumanirajasree</div>
+                    <div class="team-member-item"><span class="member-dot"></span> 2. J. Veera Rishitha</div>
+                    <div class="team-member-item"><span class="member-dot"></span> 3. K. Srimahalakshmi</div>
+                    <div class="team-member-item"><span class="member-dot"></span> 4. N. Trilokesh</div>
+                </div>
+            </div>
+            <div class="slide-footer-info" style="justify-content: center; gap: 20px;">
+                <span>PYDAH SkillPath • Pydah Educational Academy</span>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+        let currentSlide = 1;
+        const totalSlides = 10;
+
+        function showSlide(idx) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            const target = document.querySelector(`.slide[data-index="${idx}"]`);
+            if (target) {
+                target.classList.add('active');
+                currentSlide = idx;
+                document.getElementById('slide-num').textContent = `Slide ${currentSlide} of ${totalSlides}`;
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) showSlide(currentSlide - 1);
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') nextSlide();
+            if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+            if (e.key.toLowerCase() === 'f') toggleFullScreen();
+        });
+    </script>
+</body>
+</html>
